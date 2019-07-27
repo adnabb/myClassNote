@@ -54,3 +54,16 @@ VMware Workstation Pro 下载地址：https://pan.baidu.com/s/1XXhFFh0Fx0vzvcd1A
 ## 问题
 （1）由于最开始是根据教程一板一眼来做的，后来发现在虚拟机中下载的东西重启之后就全部没有了，百思不得其解，最后知道是因为教程中间推荐的镜像是LiveCD版本，他可以让你在不安装到硬盘的前提下体验操作系统，所以大家下载镜像的时候一定要根据自己的需求下载，并且需要多了解一些linux的相关知识。
 > 参考文章：https://blog.csdn.net/chenghui0317/article/details/9372713
+
+（2）在安装CentOS6.5的时候VMware报错（如下）：
+
+![微信截图_20190723192352.png](https://upload-images.jianshu.io/upload_images/5657049-3b2aa59dfd033cd9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+解决方案：
+
+1. 重启电脑进入BIOS系统（我的电脑是按DEL，可以网上搜索）；
+2. 进入advanced选项卡，选择**CPU setup**，点击enter进入；
+3. 选择**Intel Virtualization Technology**，选择**Enable**选项；
+4. 按F10保存，保存后退出，页面重启成功后进入VMware就可以成功安装系统了。
+
+> 参考文章：https://jingyan.baidu.com/article/fc07f98976710e12ffe519de.html
