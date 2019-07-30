@@ -1,6 +1,6 @@
 下面是对JavaScirpt自动化测试和持续集成内容的整理：
 
-# JavaScript自动化测试
+# JavaScript自动化测试介绍
 
 ## 测试工具
 
