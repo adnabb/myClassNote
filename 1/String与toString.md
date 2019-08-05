@@ -18,15 +18,28 @@ toString() 是 Object 原型的一个方法。
 	a.toString();
 	// "1"
 
-a 是一个字符串，相当于String的一个实例对象，String又是Object的实例化对象，所以 a 继承了 Object 的原型方法：
+当原始数据类型（boolean，Number、String）在调用方法时，JS 将会创建对象，以便调用方法属性，而在使用完毕后将会销毁该对象。
+
+a 是一个字符串，相当于String的一个实例对象，String对象有toString的方法，所以a继承了String的原型方法：
 
 	typeof a === 'string'
 	// true
+	a.hasOwnProperty('toString')
+	// false
 	a.__proto__ === String.prototype
 	// true
-	String.prototype.__proto__ === Object.prototype
+	String.prototype.hasOwnProperty('toString')
 	// true
-	Object.prototype.hasOwnProperty('toString')
+	a.__proto__.hasOwnProperty('toString')
+	// true
+
+而我们又可以知道String是Function的实例对象，Function是自身的实例对象，Function的原型对象的__proto__最终指向 Object，所以 String 的toString方法是继承的 Object，然后重新改造的。
+
+	String.__proto__ === Function.prototype
+	// true
+	Function.__proto__ === Function.prototype
+	// true
+	Function.prototype.__proto__ === Object.prototype
 	// true
 	
 
