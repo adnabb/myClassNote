@@ -20,7 +20,7 @@ toString() 是 Object 原型的一个方法。
 
 当原始数据类型（boolean，Number、String）在调用方法时，JS 将会创建对象，以便调用方法属性，而在使用完毕后将会销毁该对象。
 
-a 是一个字符串，相当于String的一个实例对象，String对象有toString的方法，所以a继承了String的原型方法：
+a 是一个字符串，相当于String的一个实例对象（具体可以看引用部分），String对象有toString的方法，所以a继承了String的原型方法：
 
 	typeof a === 'string'
 	// true
@@ -41,6 +41,28 @@ a 是一个字符串，相当于String的一个实例对象，String对象有toS
 	// true
 	Function.prototype.__proto__ === Object.prototype
 	// true
+
+#### 包装对象
+
+这里需要引入包装对象的概念，所谓“包装对象”，就是分别于数字、字符串、布尔值对应的 `Number String Boolean` 三个原生对象；他们可以把原始对象的值包装成对象。
+
+包装对象最大的 **目的**，首先使得JavaScript的对象涵盖所有的值，其次使得原始类型的值可以方便的调用某些方法。
+
+**这三个对象作为构造函数（有 new）时使用，可以将原始类型转换为对象；作为普通函数（没有 new）使用，可以将任何类型的值，转为原始类型的值。**
+
+原始类型的值，可以自动当作对象调用，即调用各种对象的方法和参数。这时，JavaScript 引擎会自动将原始类型的值转为包装对象实例，在使用后立刻销毁实例。
+
+	var str = 'abc';
+	str.length // 3
+	// 等同于
+	var strObj = new String(str)
+	// String {
+	//   0: "a", 1: "b", 2: "c", length: 3, [[PrimitiveValue]]: "abc"
+	// }
+	strObj.length // 3
+	strObj = null
+
+> 参考文章：[https://www.bookstack.cn/read/javascript-tutorial/docs-stdlib-wrapper.md](https://www.bookstack.cn/read/javascript-tutorial/docs-stdlib-wrapper.md "包装对象")
 	
 
 ### 区别二：Sting()可以完成对 null 和 undefined 的转换
@@ -59,7 +81,7 @@ String() 可以将 `null, undefined` 转化为字符串；而 toString()不可�
 
 进一步理解：
 
-JavaScript 有六种基本数据类型 `Number String Boolean null undefined Symbol` 和 `Object`。其中 Object 又包括 `object array function`。
+JavaScript 有六种基本数据类型 `Number String Boolean null undefined Symbol` 和 `Object`。其中 Object 又包括 `object array function Date RegExp`。
 
 > Symbol( 在 ECMAScript 6 中新添加的类型)。一种实例是唯一且不可改变的数据类型。
 
@@ -113,4 +135,7 @@ String()只支持转为普通字符串，不支持转为相应进制的字符串
 	var num = 1234567890123456789012;
 	console.log(num.toString());
 	//"1.2345678901234568e+21"
+
+todo:
+> 参考文章：
 
