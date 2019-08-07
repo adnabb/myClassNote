@@ -136,6 +136,6 @@ String()只支持转为普通字符串，不支持转为相应进制的字符串
 	console.log(num.toString());
 	//"1.2345678901234568e+21"
 
-todo:
-> 参考文章：
+
+> 参考文章：[https://blog.csdn.net/huang100qi/article/details/80543045](https://blog.csdn.net/huang100qi/article/details/80543045 "浅谈JS中String()与 .toString()的区别")
 
