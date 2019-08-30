@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>demo</title>
+</head>
+
+<body>
+    <form>
+        <label for="id-checkbox">Checkbox:</label>
+        <input type="checkbox" id="id-checkbox" />
+    </form>
+    <div id="output-box"></div>
+</body>
+
+<script>
+    /**
+     * 阻止默认行为只会阻止该元素的默认行为，并不会阻止后续的处理
+     * */
+    // onclick
+    document.querySelector("#id-checkbox").onclick = function (e) {
+        // e.preventDefault();
+        console.log(1, e.eventPhase);
+    };
+
+    // addEventListener
+    document.querySelector("#id-checkbox").addEventListener("click", function (e) {
+        // document.getElementById("output-box").innerHTML +=
+        //     "Sorry! <code>preventDefault()</code> won't let you check this!<br>";
+        // e .preventDefault();
+        console.log(2, e.eventPhase)
+    }, false);
+
+    /**
+     * dispatchEvent 手动触发事件
+     * */
+    const evt = new Event('click', {bubbles: true, cancelable: true});
+    document.querySelector('#id-checkbox').addEventListener('click', function(e) {
+        console.log(3, e.eventPhase);
+    });
+    document.querySelector('#id-checkbox').dispatchEvent(evt);
+
+</script>
+
+</html>
