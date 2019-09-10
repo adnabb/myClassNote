@@ -4,6 +4,10 @@
 
 > 源码地址参考：[https://github.com/nodejs/node/blob/5e6193f669c2b83031771dd794f81fdebac5e561/lib/events.js#L42](https://github.com/nodejs/node/blob/5e6193f669c2b83031771dd794f81fdebac5e561/lib/events.js#L42 "node/lib/events.js")
 
+node的EventEmitter模式属于典型的发布订阅模式，即有订阅者和发布者以及一个调度中心，订阅者只需要在注册的时候将类型和调度方法注册到调度中心，当发布者发布事件后，由调度中心触发事件的发生。
+
+以下是我对node EventEmitter的完全讲解，里面也会涉及到的很多边界情况，欢迎大家阅读和挑错~
+
 ## EventEmitter.init
 创建了function EventEmitter，并且调用硬绑定this调用了他的init方法。
 
@@ -210,6 +214,10 @@ listeners返回的是原始的监听器而不是包装侦听器函数，在v9.4.
 	  } else {
 	    // To avoid recursion in the case that type === "newListener"! Before
 	    // adding it to the listeners, first emit "newListener".
+
+注释的意思为：避免由于type为newListenr时发生递归事件，再将它添加到listener之
+前，首先出发newListener事件
+
 	    if (events.newListener !== undefined) {
 	      target.emit('newListener', type,
 	        listener.listener ? listener.listener : listener);
@@ -217,9 +225,14 @@ listeners返回的是原始的监听器而不是包装侦听器函数，在v9.4.
 	      // Re-assign `events` because a newListener handler could have caused the
 	      // this._events to be assigned to a new object
 	      events = target._events;
+
+触发了newListener 之后重新获取this._events的值
+
 	    }
 	    existing = events[type];
 	  }
+
+变量existing现在为this._events[type]（某个具体type的事件集合）
 	
 	  if (existing === undefined) {
 	    // Optimize the case of one listener. Don't need the extra array object.
@@ -228,7 +241,6 @@ listeners返回的是原始的监听器而不是包装侦听器函数，在v9.4.
 	  } else {
 	    if (typeof existing === 'function') {
 	      // Adding the second element, need to change to array.
-		  // => addEventListener默认添加的第一个参数events[type]都是function类型的，因此如果有多个参数要添加需要将其变为数组类型，pretend参数决定了他加入数组的方式是从头部添加还是从尾部添加。
 	      existing = events[type] =
 	        prepend ? [listener, existing] : [existing, listener];
 	      // If we've already got an array, just append.
@@ -237,9 +249,10 @@ listeners返回的是原始的监听器而不是包装侦听器函数，在v9.4.
 	    } else {
 	      existing.push(listener);
 	    }
+
+addEventListener默认添加某一类型的事件时，第一个事件的events[type]是function类型的，添加第二个事件是需要将function变为数组类型，其中pretend参数决定了他加入数组的方式是从头部添加还是从尾部添加。
 	
 	    // Check for listener leak
-		// =>查询listener个数是否超过上限，若查过则报错可能出现内存泄漏
 	    m = $getMaxListeners(target);
 	    if (m > 0 && existing.length > m && !existing.warned) {
 	      existing.warned = true;
@@ -259,6 +272,8 @@ listeners返回的是原始的监听器而不是包装侦听器函数，在v9.4.
 	
 	  return target;
 	}
+
+查询listener个数是否超过上限，若查过则报错可能出现内存泄漏
 
 ## emit
 
@@ -303,7 +318,7 @@ doError标志，用来判断事件的类型是否为error
 	    throw err; // Unhandled 'error' event
 	  }
 
-如果doError为true，则抛出ERR_UNHANDLED_ERROR错误
+如果doError为true，则抛出相应的error错误
 	
 	  const handler = events[type];
 	
@@ -352,6 +367,9 @@ doError标志，用来判断事件的类型是否为error
 	        if (events.removeListener)
 	          this.emit('removeListener', type, list.listener || listener);
 	      }
+
+如果this._events[type]就是listener，当事件总数减少一个为0，this._events为赋值为空对象，否则删除当前的events[type]，当events.removeListener存在时触发removeListener事件。
+
 	    } else if (typeof list !== 'function') {
 	      position = -1;
 	
@@ -362,6 +380,8 @@ doError标志，用来判断事件的类型是否为error
 	          break;
 	        }
 	      }
+
+如果是删除数组里的某一个listener，先找到该listener的原始地址并赋值originalListener，position。
 	
 	      if (position < 0)
 	        return this;
@@ -373,6 +393,9 @@ doError标志，用来判断事件的类型是否为error
 	          spliceOne = require('internal/util').spliceOne;
 	        spliceOne(list, position);
 	      }
+
+
+判断获取的position地址，如果小于0则当前listener不存在返回this；如果position在头部，则直接shift出去；如果在内部则获取另外一个方法spliceOne（下面会具体讲到）删除当前listener。
 	
 	      if (list.length === 1)
 	        events[type] = list[0];
@@ -383,5 +406,27 @@ doError标志，用来判断事件的类型是否为error
 	
 	    return this;
 	  };
+
+删除了listener之后，判断list的长度，如果为1，则this._events[type]为具体的函数，如果events.removeListener仍存在，则继续出发removeListener，删除当前的listner；最后返回this。
+
+
+	function spliceOne(list, index) {
+	  for (; index + 1 < list.length; index++)
+	    list[index] = list[index + 1];
+	  list.pop();
+	}
+	
+	modules.export = {
+	  spliceOne,
+	};
+
+里面的方法spliceOne，是node团队重写的splice方法，因为原生的splice方法功能强大但他们只需要简单的删除即可，这个函数性能相对于原生的splice函数有了很大的提升。
+
 	
 	EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+
+off和removeListener是一样的方法，不同的命名。
+
+以上~
+
+> 参考文章：[https://www.jianshu.com/p/3dc51474c96c](https://www.jianshu.com/p/3dc51474c96c "Node.js EventEmitter类源码浅析")、[https://github.com/yjhjstz/deep-into-node/blob/master/chapter7/chapter7-1.md](https://github.com/yjhjstz/deep-into-node/blob/master/chapter7/chapter7-1.md "github文章")
