@@ -37,7 +37,7 @@ function foo(a) {
 foo( 2 ); // 2 4 12
 ```
 
-![](https://ftp.bmp.ovh/imgs/2019/10/f0d288481ca6f17d.png)
+[![KCNz36.png](https://s2.ax1x.com/2019/10/15/KCNz36.png)](https://imgchr.com/i/KCNz36)
 
 根据代码和上图所画出的作用域气泡，我们可以很清楚的知道变量分别是属于哪个作用域，这是在代码正在编辑的时候我们就可以明确出来。
 
