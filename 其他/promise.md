@@ -174,7 +174,7 @@ doSomething
 
 #### 练习1：
 
-```
+```js
 let a = Promise.reject('a').then(() => {
     console.log('a passed')
 }).catch(() => {
