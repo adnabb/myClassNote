@@ -13,6 +13,10 @@
     - [基础用法](#基础用法)
   - [We have a problem with promises](#we-have-a-problem-with-promises)
   - [练习](#练习)
+      - [练习1：](#练习1)
+      - [练习2：](#练习2)
+      - [练习3：](#练习3)
+      - [练习4：](#练习4)
 
 <!-- /TOC -->
 
@@ -42,6 +46,16 @@ new Promise(function(resolve, reject) {
 });
 ```
 
+|
+
+|
+
+|
+
+|
+
+|
+
 正确答案是
 
 ```
@@ -55,6 +69,7 @@ then success
 
 1. Promise必须存在一种状态（pending或fulfilled或rejected）。如果为pending状态，那么可以转换到其他的两个状态；如果为fulfilled状态，那么必须有一个值，并且值和状态不可改变；如果为rejected状态，那么必须有一个原因，并且状态和原因不可改变。
 
+<br/>
 上面的说法是人为约定俗成的（可参考Promise/A+规范），所以我们当我们看到 `resolve('success');`后面还有`reject('error');`，因为前者状态已经改变为fulfilled，所以状态不会改变，往后传入值`success`。
 
 2. then方法接受两个参数，两个参数都需要为函数，否则会出现值穿透现象；then方法会继续返回一个新的Promise；then需要return一个值，如果没有return值，默认return的为undefined。
@@ -157,7 +172,7 @@ doSomething
 
 ## 练习
 
-练习1：
+#### 练习1：
 
 ```
 let a = Promise.reject('a').then(() => {
@@ -172,6 +187,16 @@ Promise.reject('b').catch(() => {
     console.log('b passed');
 });
 ```
+
+|
+
+|
+
+|
+
+|
+
+|
 
 正确答案:
 
@@ -249,7 +274,7 @@ p2.then(() => {
 
 所以按照顺序打印，由于p1抛出异常，紧跟着的是then不运行，p2抛出异常，紧跟着的是catch，打印b failed；由于没有宏任务所以直接运行二级微任务，p1找到了catch所以输出a failed；p2由于catch正常运行，返回了一个新的promise并且没有抛出异常，所以接着往下走，打印b passed。
 
-练习2：
+#### 练习2：
 
 ```js
 setTimeout(function () {
@@ -266,6 +291,16 @@ new Promise(function (resolve) {
 })
 console.log(5);
 ```
+
+|
+
+|
+
+|
+
+|
+
+|
 
 正确答案:
 
@@ -306,7 +341,7 @@ p1.then(function () {
 
 主线程 new Promise直接运行，打印2,3随后console打印5，由于主线程属于宏任务，所以接下来运行一级微任务打印4，最后运行一级宏任务，打印1。
 
-练习3：
+#### 练习3：
 
 ```js
 Promise.resolve(1)
@@ -317,6 +352,17 @@ Promise.resolve(1)
 .catch( (err) => 3)
 .then(res=>console.log(res))
 ```
+
+
+|
+
+|
+
+|
+
+|
+
+|
 
 正确答案：
 
@@ -329,7 +375,7 @@ Promise.resolve(1)
 
 打印1的原因很简单，认为resolve了一个值为1，被下面的then接收到了，其次由于then返回的promise没有抛出错误，所以紧接着下面的catch没有运行，继续往下链式调用，打印了上一个then返回的值2。
 
-练习4：
+#### 练习4：
 
 ```js
 Promise.resolve(1)
@@ -340,6 +386,17 @@ Promise.resolve(1)
 .then((x) => console.log(x))
 .catch( (x) => console.log(error))
 ```
+
+
+|
+
+|
+
+|
+
+|
+
+|
 
 正确答案：
 
