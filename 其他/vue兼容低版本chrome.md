@@ -68,3 +68,8 @@ transpileDependencies: ['replay-attacks-SM3'],
 ```
 
 更多使用请看[官方文档](https://cli.vuejs.org/zh/config/#transpiledependencies)
+
+---
+
+更多问题可以参考其他文章：
+（1）[使用 Vue 及 Vue CLI3 时遇到的问题记录](https://www.cnblogs.com/givingwu/p/10220295.html)
