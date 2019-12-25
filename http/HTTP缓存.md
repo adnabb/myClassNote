@@ -1,20 +1,35 @@
-# HTTP缓存
+# 1. HTTP缓存
 
 HTTP缓存是性能优化的基础，也是了解HTTP请求的一个基础，下面用例子+讲解仔细说明比较常用的HTTP缓存用到的内容，其他非常见的内容了解即可。**重点是HTTP1.1下的内容（结合服务端）。**
 
-## “石器时代”
+<!-- TOC -->
+
+- [1. HTTP缓存](#1-http%e7%bc%93%e5%ad%98)
+  - [1.1. “石器时代”](#11-%e7%9f%b3%e5%99%a8%e6%97%b6%e4%bb%a3)
+    - [1.1.1. pragma](#111-pragma)
+    - [1.1.2. expires](#112-expires)
+  - [1.2. HTTP1.1](#12-http11)
+    - [1.2.1. Cache Control](#121-cache-control)
+      - [1.2.1.1. max-age](#1211-max-age)
+      - [1.2.1.2. 其他的值](#1212-%e5%85%b6%e4%bb%96%e7%9a%84%e5%80%bc)
+    - [1.2.2. LastModified &amp; etag](#122-lastmodified-amp-etag)
+    - [1.2.3. date](#123-date)
+
+<!-- /TOC -->
+
+## 1.1. “石器时代”
 早在HTTP1.0的时代，我们就开始考虑了缓存问题。
 
 以下的两种都是针对客户端（浏览器）的设置。
 
-### pragma
+### 1.1.1. pragma
 在IE浏览器上，我们可以通过`meta`标签设置`pragma为no-cache`来告诉浏览器不需要缓存该页面（即每次访问页面都要发送请求）。
 
 ```html
 <meta http-quiv="Pragma" content="no-cache">
 ```
 
-### expires
+### 1.1.2. expires
 
 注意这里的时间需要时GMT时间，我们可以用Date.prototype.toUTCString()进行转化。
 
@@ -28,13 +43,13 @@ HTTP缓存是性能优化的基础，也是了解HTTP请求的一个基础，下
 
 **注意：以上只是简单的说明了一下客户端的设置，下面内容会结合到服务端的设置。**
 
-## HTTP1.1
+## 1.2. HTTP1.1
 
-### Cache Control
+### 1.2.1. Cache Control
 
 Cache Control可以设置很多值，比如no-cache, public, private, no-store, max-age等等，我们先以最容易理解的设置最大时间来做示范。
 
-#### max-age
+#### 1.2.1.1. max-age
 
 首先是基础页面，test.html，里面有一个资源，是请求script.js
 ```html
@@ -146,7 +161,7 @@ if (req.url === '/script.js') {
 
 ---
 
-#### 其他的值
+#### 1.2.1.2. 其他的值
 
 上面详细地说明了max-age的用法，其他的使用也是在server1.js的Content-Control中加入新的内容，例如：
 
@@ -177,9 +192,7 @@ if (req.url === '/script.js') {
 
 （6）must-revalidate：必须进行服务端的验证
 
-（7）no-transform
-
-### LastModified & etag
+### 1.2.2. LastModified & etag
 
 接下来我们详细说一下LastModified和etag，他们的使用前提就是需要向服务器发送请求，所以我们可以和no-cache（使用缓存前会去服务器进行验证）进行连用。
 
@@ -309,8 +322,72 @@ etag判断思路：
 第四次请求
 ![5805b391834876903.png](https://www.imageoss.com/images/2019/12/24/5805b391834876903.png)
 
-**优先级补充：max-age > etag > last-modified**
+server3.js
+```js
+const http = require('http');
+const fs = require('fs');
+const crypto = require('crypto');
 
-### vary
+const port = 80;
+const host = 'localhost';
 
-### date & age
+const server = http.createServer((req, res) => {
+    if (req.url === '/') {
+        res.writeHead(200, {
+            'Content-Type': 'text/html',
+        })
+        res.end(fs.readFileSync('test.html'));
+    }
+
+    if (req.url === '/script.js') {
+        const stream = fs.createReadStream('script.js');
+        const hash = crypto.createHash('sha256');
+
+        stream.on('data', (data) => {
+            hash.update(data);
+        });
+
+        stream.on('end', () => {
+            const fileHash = hash.digest('hex');
+
+            if (req.headers['if-none-match'] === fileHash) {
+                res.writeHead(304, {
+                    'Content-Type': 'text/javascript',
+                    'Cache-Control': 'no-cache',
+                    'etag': fileHash,
+                })
+                res.end('code 304');
+            } else {
+                res.writeHead(200, {
+                    'Content-Type': 'text/javascript',
+                    'Cache-Control': 'no-cache',
+                    'etag': fileHash,
+                })
+                res.end(fs.readFileSync('script.js'));
+            }
+        });
+    }
+});
+
+server.listen(port, host, () => {
+    console.log(`server is running on http://${host}:${port}`);
+});
+```
+
+**优先级补充：max-age > etag > last-modified（在max-age失效请求服务器之后，etag的优先级更高）**
+
+### 1.2.3. date
+
+我们在请求时，可以看到服务端会自动带上date这个属性，他表示原服务器发送该资源响应报文的时间，所以我们也可以根据这个属性来判断我们的资源是否命中了缓存。
+
+第一次访问，服务器返回资源
+![1.png](https://www.imageoss.com/images/2019/12/25/1.png)
+
+在失效时间内再次访问，命中缓存，date并没有改变
+![2.png](https://www.imageoss.com/images/2019/12/25/2.png)
+
+---
+
+如果大家还想更多地深入了解，可以参考文章：
+（1）[浅谈浏览器的缓存机制](https://www.cnblogs.com/vajoy/p/5341664.html)
+（2）[catch control mdn](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Cache-Control)
