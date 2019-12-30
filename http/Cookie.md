@@ -83,4 +83,7 @@ const server = http.createServer((req, res) => {
 
 我在本地http请求下设置了secure，发现请求中发现虽然请求头还是带有了代码中设置的假cookie，但是实际上在application中并没有生成cookie（注意：在请求之前先清空cookie）。
 
+（5）Domain，在主域名的服务器上设置了cookie，其二级域名页面也可以直接获取到相应的cookie。
+
 更多设置请参考官方文档：[cookie mdn](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Set-Cookie)
+
