@@ -4,10 +4,10 @@
 
 <!-- TOC -->
 
-- [Session](#session)
-    - [上节回顾](#上节回顾)
-    - [Session交互机制](#session交互机制)
-    - [Session的实现方式](#session的实现方式)
+- [1. Session](#1-session)
+  - [1.1. 上节回顾](#11-%e4%b8%8a%e8%8a%82%e5%9b%9e%e9%a1%be)
+  - [1.2. Session交互机制](#12-session%e4%ba%a4%e4%ba%92%e6%9c%ba%e5%88%b6)
+  - [1.3. Session的实现方式](#13-session%e7%9a%84%e5%ae%9e%e7%8e%b0%e6%96%b9%e5%bc%8f)
 
 <!-- /TOC -->
 
