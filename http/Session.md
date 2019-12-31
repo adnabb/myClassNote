@@ -21,7 +21,7 @@
 
 Session的交互和Cookie的区别是原内容保存的位置换了，cookie将内容保存在了客户端，session将内容保存在了服务端。
 
-![session交互机制](https://pic4.zhimg.com/80/v2-0113a489944100bdc9ad1091286bb6b3_hd.jpg)
+![session交互机制](https://pic4.zhimg.com/80/v2-0113a489944100bdc9ad1091286bb6b3_hd.jpg)（文末参考文章内的图片）
 
 Session有很多种实现方式，上图是结合Cookie实现的（下面的1、2、3和图片的1、2、3对应）。
 
