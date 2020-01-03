@@ -14,6 +14,7 @@ HTTP缓存是性能优化的基础，也是了解HTTP请求的一个基础，下
       - [1.2.1.2. 其他的值](#1212-%e5%85%b6%e4%bb%96%e7%9a%84%e5%80%bc)
     - [1.2.2. LastModified &amp; etag](#122-lastmodified-amp-etag)
     - [1.2.3. date](#123-date)
+- [2. 资源缓存方案](#2-%e8%b5%84%e6%ba%90%e7%bc%93%e5%ad%98%e6%96%b9%e6%a1%88)
 
 <!-- /TOC -->
 
@@ -47,7 +48,7 @@ HTTP缓存是性能优化的基础，也是了解HTTP请求的一个基础，下
 
 ### 1.2.1. Cache Control
 
-Cache Control可以设置很多值，比如no-cache, public, private, no-store, max-age等等，我们先以最容易理解的设置最大时间来做示范。
+Cache Control可以设置很多值，比如no-cache, public, private, no-store, max-age等等（在nginx反向代理服务文章内有详细介绍），我们先以最容易理解的设置最大时间来做示范。
 
 #### 1.2.1.1. max-age
 
@@ -391,3 +392,9 @@ server.listen(port, host, () => {
 如果大家还想更多地深入了解，可以参考文章：
 （1）[浅谈浏览器的缓存机制](https://www.cnblogs.com/vajoy/p/5341664.html)
 （2）[catch control mdn](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Cache-Control)
+
+# 2. 资源缓存方案
+
+1. HTML no-cache
+2. CSS/JAVASCIRPT MD5/TIMESTAMP/VERSION + 长缓存
+3. IMAGE HASH + 长缓存
